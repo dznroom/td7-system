@@ -15,7 +15,12 @@ const AUTH_CONFIG = {
 
 class App {
     constructor() {
-        this.initialize();
+        // Garantir que o DOM está carregado antes de inicializar
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.initialize());
+        } else {
+            this.initialize();
+        }
     }
 
     initialize() {
@@ -40,10 +45,7 @@ class App {
     initializeEventListeners() {
         // Adicionar evento de submit ao formulário de login
         if (this.loginForm) {
-            this.loginForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.handleLogin(e);
-            });
+            this.loginForm.addEventListener('submit', (e) => this.handleLogin(e));
         }
 
         // Cliente
@@ -78,12 +80,10 @@ class App {
         
         this.messageElement.textContent = text;
         this.messageElement.className = `message ${type}`;
-        this.messageElement.style.opacity = '1';
         
         setTimeout(() => {
             this.messageElement.textContent = '';
             this.messageElement.className = 'message';
-            this.messageElement.style.opacity = '0';
         }, 3000);
     }
 
@@ -163,6 +163,8 @@ class App {
     checkExistingSession() {
         const user = sessionStorage.getItem('user');
         if (user) {
+            this.loginSection.style.display = 'none';
+            this.dashboardSection.style.display = 'block';
             this.initializeDashboard();
         }
     }
@@ -672,5 +674,4 @@ class App {
 }
 
 // Criar uma instância global para funções chamadas pelo HTML
-const app = new App();
-export default app; 
+window.app = new App(); 
