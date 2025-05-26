@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TD7 System</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    * { 
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body { 
+      margin: 0; 
+      font-family: 'Poppins', Arial, sans-serif;
+      background-color: #000;
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    /* LOGIN */
+    #login-section {
+      display: flex;
+      height: 100vh;
+      justify-content: center;
+      align-items: center;
+      background: #000;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1000;
+    }
+
+    .login-container {
+      background: rgba(0, 0, 0, 0.85);
+      padding: 40px 50px;
+      border-radius: 15px;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
+      width: 380px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #00ffff;
+      font-size: 2em;
+    }
+
+    label {
+      display: block;
+      margin-top: 20px;
+      color: #fff;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="number"],
+    input[type="tel"],
+    select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.7);
+      color: #fff;
+    }
+
+    button {
+      margin-top: 30px;
+      width: 100%;
+      padding: 10px;
+      background: #00ffff;
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: rgba(0, 255, 255, 0.8);
+    }
+
+    .message {
+      margin-top: 20px;
+      text-align: center;
+      padding: 10px;
+      border-radius: 4px;
+    }
+
+    .error { 
+      background: #ff4444;
+      color: #fff;
+    }
+    
+    .success { 
+      background: #00ffff;
+      color: #000;
+    }
+
+    /* DASHBOARD */
+    #dashboard-section {
+      display: none;
+      min-height: 100vh;
+      background: #000;
+    }
+
+    header {
+      background: #000;
+      color: #fff;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+    }
+
+    header h1 {
+      margin: 0;
+      cursor: pointer;
+      color: #00ffff;
+    }
+
+    nav {
+      background: #111;
+      display: flex;
+      justify-content: center;
+      padding: 10px;
+      border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      margin: 0 15px;
+      padding: 5px 10px;
+      border-radius: 4px;
+      transition: background 0.3s;
+      cursor: pointer;
+    }
+
+    nav a:hover {
+      background: rgba(0, 255, 255, 0.1);
+    }
+
+    nav a.active {
+      background: #00ffff;
+      color: #000;
+    }
+
+    /* Ajustes gerais de conteúdo */
+    .content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 30px;
+    }
+
+    /* Cards do Dashboard */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .dashboard-card {
+      background: #111;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .card-header h3 {
+      color: #00ffff;
+      margin: 0 0 15px 0;
+    }
+
+    /* Tabelas */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #111;
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 20px 0;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+    }
+
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+    }
+
+    th {
+      background: #000;
+      color: #00ffff;
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background: rgba(0, 255, 255, 0.05);
+    }
+
+    /* Área de venda */
+    .venda-area {
+      display: none;
+      max-width: 1400px;
+      margin: 20px auto;
+      background: #111;
+      padding: 25px;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+    }
+
+    .venda-header {
+      text-align: center;
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+    }
+
+    .venda-header h3 {
+      color: #00ffff;
+      margin-bottom: 10px;
+      font-size: 1.5em;
+    }
+
+    .venda-header p {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 1.1em;
+    }
+
+    .venda-content {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 25px;
+    }
+
+    .venda-produtos {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    #produtos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .produto-card {
+      background: #222;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .produto-nome {
+      color: #00ffff;
+      font-weight: 500;
+      font-size: 1.2em;
+    }
+
+    .produto-preco {
+      color: #fff;
+      font-size: 1.1em;
+    }
+
+    .produto-quantidade {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .produto-quantidade label {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 1em;
+    }
+
+    .produto-quantidade input {
+      width: 120px;
+      text-align: center;
+      padding: 10px;
+      background: #000;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      color: #fff;
+      border-radius: 4px;
+      font-size: 1em;
+    }
+
+    .venda-resumo {
+      background: #222;
+      padding: 25px;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      height: fit-content;
+      position: sticky;
+      top: 20px;
+    }
+
+    .venda-total {
+      font-size: 1.4em;
+      text-align: center;
+      padding: 20px;
+      background: #000;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      color: #00ffff;
+      margin-bottom: 20px;
+    }
+
+    .venda-ganhos {
+      padding: 20px;
+      background: #000;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      margin-bottom: 20px;
+    }
+
+    .venda-ganhos h4,
+    .venda-materiais h4 {
+      color: #00ffff;
+      text-align: center;
+      margin-bottom: 15px;
+      font-size: 1.1em;
+    }
+
+    .venda-materiais {
+      padding: 20px;
+      background: #000;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+    }
+
+    .materiais-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+    }
+
+    .materiais-item:last-child {
+      border-bottom: none;
+    }
+
+    .material-nome {
+      color: #00ffff;
+    }
+
+    .quantidade {
+      color: #fff;
+    }
+
+    .venda-actions {
+      margin-top: 25px;
+      display: flex;
+      gap: 15px;
+    }
+
+    .venda-actions button {
+      flex: 1;
+      padding: 12px;
+      font-size: 1.1em;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .venda-actions .voltar-btn {
+      background: #333;
+      color: #fff;
+    }
+
+    .venda-actions .voltar-btn:hover {
+      background: #444;
+    }
+
+    .venda-actions #btn-finalizar {
+      background: #00ffff;
+      color: #000;
+    }
+
+    .venda-actions #btn-finalizar:hover {
+      background: rgba(0, 255, 255, 0.8);
+    }
+
+    .venda-actions #btn-finalizar:disabled {
+      background: #333;
+      color: #666;
+      cursor: not-allowed;
+    }
+
+    /* Responsividade */
+    @media (max-width: 1200px) {
+      .venda-content {
+        grid-template-columns: 1fr;
+      }
+
+      .venda-resumo {
+        position: static;
+      }
+    }
+
+    @media (max-width: 768px) {
+      #produtos-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .venda-actions {
+        flex-direction: column;
+      }
+    }
+
+    /* Formulários */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+
+      nav {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      nav a {
+        width: 100%;
+        text-align: center;
+        margin: 5px 0;
+      }
+
+      .login-container {
+        width: 90%;
+        padding: 30px 20px;
+      }
+    }
+
+    /* Cliente Form */
+    .cliente-form {
+      max-width: 800px;
+      margin: 20px auto;
+      background: #111;
+      padding: 25px;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+    }
+
+    .cliente-form h3 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #00ffff;
+      font-size: 1.5em;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #00ffff;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      background: #000;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 4px;
+      color: #fff;
+      font-size: 1em;
+    }
+
+    .divisor {
+      position: relative;
+      text-align: center;
+      margin: 30px 0;
+    }
+
+    .divisor::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: rgba(0, 255, 255, 0.3);
+    }
+
+    .divisor span {
+      background: #111;
+      padding: 0 15px;
+      color: #00ffff;
+      position: relative;
+      font-size: 1.1em;
+    }
+
+    .form-actions {
+      margin-top: 25px;
+    }
+
+    .form-actions button {
+      width: 100%;
+      padding: 12px;
+      font-size: 1.1em;
+      background: #00ffff;
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .form-actions button:hover {
+      background: rgba(0, 255, 255, 0.8);
+    }
+
+    /* Search box */
+    .search-box {
+      max-width: 800px;
+      margin: 20px auto;
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 15px;
+      background: #111;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+    }
+
+    .search-box input {
+      min-width: 300px;
+    }
+
+    .search-box button {
+      min-width: 120px;
+    }
+
+    /* Status */
+    .status-circle {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .status-circle.pendente {
+      background: #ff4444;
+    }
+
+    .status-circle.entregue {
+      background: #00ffff;
+    }
+
+    /* Gráficos */
+    .graficos-container {
+      max-width: 1000px;
+      margin: 20px auto;
+      background: #111;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+    }
+
+    .graficos-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .grafico-card {
+      background: #222;
+      border-radius: 8px;
+      padding: 20px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+    }
+
+    /* Ranking */
+    .ranking-container {
+      max-width: 1000px;
+      margin: 20px auto;
+      background: #111;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+    }
+
+    .ranking-filters {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .ranking-btn {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 4px;
+      background: #222;
+      color: #fff;
+      cursor: pointer;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+    }
+
+    .ranking-btn.active {
+      background: #00ffff;
+      color: #000;
+    }
+
+    .ranking-card {
+      background: #222;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 10px 0;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+    }
+
+    .ranking-position {
+      font-size: 1.5em;
+      font-weight: bold;
+      min-width: 40px;
+      text-align: center;
+      color: #00ffff;
+    }
+
+    .ranking-info {
+      flex: 1;
+    }
+
+    .ranking-name {
+      font-size: 1.1em;
+      margin-bottom: 5px;
+      color: #00ffff;
+    }
+
+    .ranking-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .ranking-stat {
+      background: #333;
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+    }
+
+    /* Alertas */
+    .alerta-estoque {
+      background: rgba(255, 68, 68, 0.2);
+      color: #fff;
+      margin: 5px 0;
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #ff4444;
+    }
+
+    /* User Info */
+    #userInfo {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      color: #00ffff;
+    }
+
+    .logout-btn {
+      background: #ff4444;
+      color: #fff;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    /* Organização */
+    #organizacao-field {
+      margin: 20px 0;
+      padding: 20px;
+      background: #222;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+    }
+
+    #organizacao {
+      width: 100%;
+      padding: 10px;
+      background: #000;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      color: #fff;
+      border-radius: 4px;
+    }
+
+    /* Calculadora */
+    .calculadora-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 1200px;
+      margin: 20px auto;
+      align-items: start;
+    }
+
+    .calculadora-orcamento {
+      background: #111;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      height: fit-content;
+    }
+
+    .calculadora-orcamento h3 {
+      text-align: center;
+      margin-bottom: 15px;
+      color: #00ffff;
+      font-size: 1.3em;
+    }
+
+    .calculadora-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .calculadora-produtos {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    .calc-produto {
+      background: #222;
+      padding: 12px;
+      border-radius: 4px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+    }
+
+    .calc-produto-header {
+      margin-bottom: 8px;
+    }
+
+    .calc-produto-nome {
+      font-size: 1em;
+    }
+
+    .calc-produto-quantidade input {
+      width: 90px;
+      padding: 6px;
+      font-size: 0.95em;
+    }
+
+    .calc-resultados {
+      padding: 15px;
+      margin-top: 15px;
+    }
+
+    .calc-resultados h4 {
+      margin-bottom: 12px;
+      font-size: 1.1em;
+    }
+
+    .calc-total {
+      padding: 12px;
+      font-size: 1.1em;
+    }
+
+    .calc-ganhos,
+    .calc-materiais {
+      padding: 12px;
+      margin: 12px 0;
+    }
+
+    .calc-ganhos-title {
+      margin-bottom: 8px;
+      font-size: 1em;
+    }
+
+    .calc-material-item {
+      padding: 4px 0;
+    }
+  </style>
+</head>
+<body>
+  <section id="login-section">
+    <div class="login-container">
+      <h2>TD7 System - Login</h2>
+      <form id="loginForm">
+        <label for="nome">Nome</label>
+        <input type="text" id="nome" name="nome" placeholder="Seu nome" required />
+        <label for="iduser">ID</label>
+        <input type="text" id="iduser" name="iduser" placeholder="Seu ID" required />
+        <label for="cargo">Cargo</label>
+        <select id="cargo" name="cargo" required>
+          <option value="" disabled selected>Selecione o cargo</option>
+          <option value="vendedor">Vendedor</option>
+          <option value="gerente">Gerente</option>
+          <option value="lider">Líder</option>
+        </select>
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" name="senha" placeholder="Sua senha" required />
+        <button type="submit">Entrar</button>
+        <div id="message" class="message"></div>
+      </form>
+    </div>
+  </section>
+
+  <section id="dashboard-section">
+    <!-- O conteúdo será preenchido dinamicamente pelo JavaScript -->
+  </section>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html> 

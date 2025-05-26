@@ -1,0 +1,15 @@
+{
+  "name": "td7-system",
+  "version": "1.0.0",
+  "description": "Sistema de gerenciamento de vendas TD7",
+  "main": "index.html",
+  "scripts": {
+    "dev": "serve .",
+    "build": "echo 'No build step required'"
+  },
+  "dependencies": {
+    "serve": "^14.2.1"
+  },
+  "author": "",
+  "license": "ISC"
+} 
