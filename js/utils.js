@@ -1,6 +1,9 @@
 // Funções Utilitárias
 export function formatarMoeda(valor) {
-    return `R$ ${valor.toLocaleString('pt-BR')}`;
+    return valor.toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+    });
 }
 
 export function formatarData(data, periodo) {
@@ -96,14 +99,14 @@ export function calcularMaterialNecessario(produto, quantidade) {
 }
 
 export function verificarEstoqueSuficiente(materiaisNecessarios, estoque) {
-    for (const [materialNome, qtdNecessaria] of Object.entries(materiaisNecessarios)) {
-        const materialEstoque = estoque.find(e => e.nome === materialNome);
-        if (!materialEstoque || materialEstoque.quantidade < qtdNecessaria) {
+    for (const [material, quantidade] of Object.entries(materiaisNecessarios)) {
+        const itemEstoque = estoque.find(e => e.nome === material);
+        if (!itemEstoque || itemEstoque.quantidade < quantidade) {
             return {
                 suficiente: false,
-                material: materialNome,
-                necessario: qtdNecessaria,
-                disponivel: materialEstoque ? materialEstoque.quantidade : 0
+                material,
+                necessario: quantidade,
+                disponivel: itemEstoque ? itemEstoque.quantidade : 0
             };
         }
     }
@@ -116,4 +119,28 @@ export function calcularGanhos(total, comParceria = true) {
 
 export function calcularLotesNecessarios(quantidade, loteQuantidade) {
     return Math.ceil(quantidade / loteQuantidade);
-} 
+}
+
+window.utils = {
+    formatarMoeda(valor) {
+        return valor.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        });
+    },
+
+    verificarEstoqueSuficiente(materiaisNecessarios, estoque) {
+        for (const [material, quantidade] of Object.entries(materiaisNecessarios)) {
+            const itemEstoque = estoque.find(e => e.nome === material);
+            if (!itemEstoque || itemEstoque.quantidade < quantidade) {
+                return {
+                    suficiente: false,
+                    material,
+                    necessario: quantidade,
+                    disponivel: itemEstoque ? itemEstoque.quantidade : 0
+                };
+            }
+        }
+        return { suficiente: true };
+    }
+}; 

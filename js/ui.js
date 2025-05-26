@@ -1,7 +1,4 @@
-import { formatarMoeda } from './utils.js';
-import CONFIG from './config.js';
-
-export const UI = {
+window.UI = {
     showMessage(text, type, elementId = 'message') {
         const messageDiv = document.getElementById(elementId);
         if (!messageDiv) return;
@@ -13,7 +10,7 @@ export const UI = {
             setTimeout(() => {
                 messageDiv.textContent = '';
                 messageDiv.className = 'message';
-            }, CONFIG.UI.MENSAGENS.TIMEOUT);
+            }, window.CONFIG.UI.MENSAGENS.TIMEOUT);
         }
     },
 
@@ -29,8 +26,8 @@ export const UI = {
 
         estoque.forEach((item, index) => {
             const tr = document.createElement('tr');
-            const qtdClass = item.quantidade < CONFIG.ESTOQUE.ALERTA_CRITICO ? 'critico' : 
-                           item.quantidade < CONFIG.ESTOQUE.LIMITE_BAIXO ? 'baixo' : '';
+            const qtdClass = item.quantidade < window.CONFIG.ESTOQUE.ALERTA_CRITICO ? 'critico' : 
+                           item.quantidade < window.CONFIG.ESTOQUE.LIMITE_BAIXO ? 'baixo' : '';
 
             tr.innerHTML = `
                 <td>${item.nome}</td>
@@ -88,7 +85,7 @@ export const UI = {
 
         grid.innerHTML = '';
 
-        CONFIG.PRODUTOS.forEach((produto, index) => {
+        window.CONFIG.PRODUTOS.forEach((produto, index) => {
             const card = document.createElement('div');
             card.className = 'produto-card';
             
@@ -99,10 +96,10 @@ export const UI = {
             card.innerHTML = `
                 <div class="produto-nome">${produto.nome}</div>
                 <div class="produto-info">
-                    <div class="produto-preco" id="preco-${index}">${formatarMoeda(preco)}</div>
+                    <div class="produto-preco" id="preco-${index}">${window.utils.formatarMoeda(preco)}</div>
                     ${quantidade > 0 ? `
                         <div class="produto-subtotal">
-                            Subtotal: ${formatarMoeda(subtotal)}
+                            Subtotal: ${window.utils.formatarMoeda(subtotal)}
                         </div>
                     ` : ''}
                 </div>
@@ -141,9 +138,9 @@ export const UI = {
 
         if (!totalElement || !ganhosParceiraElement || !ganhosSemParceiraElement || !materiaisDiv) return;
 
-        totalElement.textContent = formatarMoeda(total);
-        ganhosParceiraElement.textContent = formatarMoeda(ganhosComParceria);
-        ganhosSemParceiraElement.textContent = formatarMoeda(ganhosSemParceria);
+        totalElement.textContent = window.utils.formatarMoeda(total);
+        ganhosParceiraElement.textContent = window.utils.formatarMoeda(ganhosComParceria);
+        ganhosSemParceiraElement.textContent = window.utils.formatarMoeda(ganhosSemParceria);
 
         if (Object.keys(materiaisNecessarios).length === 0) {
             materiaisDiv.innerHTML = '<p class="empty-message">Nenhum material necessário ainda</p>';
@@ -198,38 +195,31 @@ export const UI = {
                     <td>#${venda.id}</td>
                     <td>
                         <div class="cliente-info">
-                            <strong>${venda.cliente.nome}</strong>
+                            <strong>${venda.cliente.nome}</strong><br>
                             <small>ID: ${venda.cliente.id}</small>
                         </div>
                     </td>
                     <td>
                         <div class="vendedor-info">
-                            <strong>${venda.vendedor.nome}</strong>
-                            <small>(${venda.vendedor.cargo})</small>
+                            <strong>${venda.vendedor.nome}</strong><br>
+                            <small>${venda.vendedor.cargo}</small>
                         </div>
                     </td>
                     <td>
-                        <div class="parceria-info">
-                            <strong>${venda.tipoParceria}</strong>
-                            ${venda.organizacao ? `<small>Org: ${venda.organizacao}</small>` : ''}
-                        </div>
+                        ${venda.tipoParceria}
+                        ${venda.organizacao ? `<br><small>${venda.organizacao}</small>` : ''}
                     </td>
-                    <td>
-                        <div class="valor-info">
-                            <strong>${formatarMoeda(venda.total)}</strong>
-                            <small>Ganhos: ${formatarMoeda(venda.ganhosVendedor)}</small>
-                        </div>
-                    </td>
+                    <td>${window.utils.formatarMoeda(venda.total)}</td>
                     <td>${venda.data}</td>
                     <td>
-                        <div class="status-circle ${venda.status} ${!podeAlterarStatus ? 'disabled' : ''}" 
-                             onclick="${podeAlterarStatus ? 'alternarStatus(' + index + ')' : ''}"
-                             title="${podeAlterarStatus ? 'Clique para alterar o status' : 'Você não tem permissão para alterar este status'}">
+                        <div class="status-circle ${venda.status}" 
+                             ${podeAlterarStatus ? `onclick="alterarStatusVenda(${index})"` : ''}
+                             title="${venda.status.charAt(0).toUpperCase() + venda.status.slice(1)}">
                         </div>
                     </td>
                     <td>
-                        <button class="view-btn" onclick="verDetalhesVenda(${index})">
-                            <i class="fas fa-eye"></i> Ver Detalhes
+                        <button class="details-btn" onclick="verDetalhesVenda(${index})">
+                            <i class="fas fa-eye"></i> Detalhes
                         </button>
                     </td>
                 </tr>
@@ -237,67 +227,23 @@ export const UI = {
         });
 
         html += '</tbody></table>';
-
-        // Adicionar estatísticas
-        const totalVendas = historico.reduce((sum, venda) => sum + venda.total, 0);
-        const totalComissoes = historico.reduce((sum, venda) => sum + venda.ganhosVendedor, 0);
-        const vendasPendentes = historico.filter(v => v.status === CONFIG.VENDAS.STATUS.PENDENTE).length;
-        const vendasEntregues = historico.filter(v => v.status === CONFIG.VENDAS.STATUS.ENTREGUE).length;
-        const vendasCanceladas = historico.filter(v => v.status === CONFIG.VENDAS.STATUS.CANCELADO).length;
-
-        html += `
-            <div class="estatisticas-resumo">
-                <h3>Resumo</h3>
-                <div class="estatisticas-grid">
-                    <div class="estatistica-item">
-                        <span class="estatistica-label">Total de Vendas:</span>
-                        <span class="estatistica-valor">${historico.length}</span>
-                    </div>
-                    <div class="estatistica-item">
-                        <span class="estatistica-label">Valor Total:</span>
-                        <span class="estatistica-valor">${formatarMoeda(totalVendas)}</span>
-                    </div>
-                    <div class="estatistica-item">
-                        <span class="estatistica-label">Total em Comissões:</span>
-                        <span class="estatistica-valor">${formatarMoeda(totalComissoes)}</span>
-                    </div>
-                    <div class="estatistica-item">
-                        <span class="estatistica-label">Ticket Médio:</span>
-                        <span class="estatistica-valor">${formatarMoeda(totalVendas / historico.length)}</span>
-                    </div>
-                    <div class="estatistica-item">
-                        <span class="estatistica-label">Vendas Pendentes:</span>
-                        <span class="estatistica-valor">${vendasPendentes}</span>
-                    </div>
-                    <div class="estatistica-item">
-                        <span class="estatistica-label">Vendas Entregues:</span>
-                        <span class="estatistica-valor">${vendasEntregues}</span>
-                    </div>
-                    <div class="estatistica-item">
-                        <span class="estatistica-label">Vendas Canceladas:</span>
-                        <span class="estatistica-valor">${vendasCanceladas}</span>
-                    </div>
-                </div>
-            </div>
-        `;
-
         historicoDiv.innerHTML = html;
     },
 
     atualizarCabecalho(usuario) {
-        const userInfo = document.getElementById('userInfo');
-        if (!userInfo) return;
+        const userInfoDiv = document.getElementById('userInfo');
+        if (!userInfoDiv) return;
 
-        userInfo.innerHTML = `
-            <div class="user-info">
-                <div class="user-details">
-                    <strong>${usuario.nome}</strong>
-                    <small>ID: ${usuario.id} | ${usuario.cargo.charAt(0).toUpperCase() + usuario.cargo.slice(1)}</small>
-                </div>
-                <button class="logout-btn" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i> Sair
-                </button>
-            </div>
+        if (!usuario) {
+            userInfoDiv.innerHTML = '';
+            return;
+        }
+
+        userInfoDiv.innerHTML = `
+            <span>${usuario.nome} (${usuario.cargo})</span>
+            <button class="logout-btn" onclick="app.logout()">
+                <i class="fas fa-sign-out-alt"></i> Sair
+            </button>
         `;
     }
 }; 
