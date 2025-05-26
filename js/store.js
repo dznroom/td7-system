@@ -1,11 +1,9 @@
-import CONFIG from './config.js';
-
 class Store {
     constructor() {
         this.state = {
             usuario: null,
             clientes: [],
-            estoque: CONFIG.ESTOQUE.INICIAL,
+            estoque: window.CONFIG ? window.CONFIG.ESTOQUE.INICIAL : [],
             historico: [],
             clienteAtualVenda: null,
             carrinhoVenda: {},
@@ -35,7 +33,7 @@ class Store {
         this.state = {
             usuario: null,
             clientes: [],
-            estoque: CONFIG.ESTOQUE.INICIAL,
+            estoque: window.CONFIG ? window.CONFIG.ESTOQUE.INICIAL : [],
             historico: [],
             clienteAtualVenda: null,
             carrinhoVenda: {},
@@ -115,4 +113,5 @@ class Store {
     }
 }
 
-export default new Store(); 
+// Criar uma instância global
+window.store = new Store(); 

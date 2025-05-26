@@ -1,9 +1,3 @@
-import store from './store.js';
-import { AuthService, ClienteService, VendaService, EstoqueService } from './services.js';
-import { UI } from './ui.js';
-import { agruparDadosPorPeriodo, formatarMoeda } from './utils.js';
-import CONFIG from './config.js';
-
 // Configurações de autenticação
 const AUTH_CONFIG = {
     SENHAS: {
@@ -24,13 +18,19 @@ class App {
     }
 
     initialize() {
+        console.log('Inicializando aplicação...'); // Debug
         this.loginForm = document.getElementById('loginForm');
         this.loginSection = document.getElementById('login-section');
         this.dashboardSection = document.getElementById('dashboard-section');
         this.messageElement = document.getElementById('message');
 
         if (!this.loginForm || !this.loginSection || !this.dashboardSection || !this.messageElement) {
-            console.error('Elementos necessários não encontrados');
+            console.error('Elementos necessários não encontrados:', {
+                loginForm: !!this.loginForm,
+                loginSection: !!this.loginSection,
+                dashboardSection: !!this.dashboardSection,
+                messageElement: !!this.messageElement
+            });
             return;
         }
 
@@ -45,7 +45,11 @@ class App {
     initializeEventListeners() {
         // Adicionar evento de submit ao formulário de login
         if (this.loginForm) {
-            this.loginForm.addEventListener('submit', (e) => this.handleLogin(e));
+            this.loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                console.log('Form submitted'); // Debug
+                this.handleLogin(e);
+            });
         }
 
         // Cliente

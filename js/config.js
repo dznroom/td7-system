@@ -1,5 +1,5 @@
 // Configurações do Sistema
-const CONFIG = {
+window.CONFIG = {
     // Configurações de Autenticação
     AUTH: {
         CARGOS: ['vendedor', 'gerente', 'lider'],
@@ -141,13 +141,11 @@ const CONFIG = {
 };
 
 // Congelar o objeto de configuração para prevenir modificações acidentais
-Object.freeze(CONFIG);
-Object.freeze(CONFIG.AUTH);
-Object.freeze(CONFIG.AUTH.SENHAS);
-Object.freeze(CONFIG.PRODUTOS);
-Object.freeze(CONFIG.ESTOQUE);
-Object.freeze(CONFIG.VENDAS);
-Object.freeze(CONFIG.UI);
-Object.freeze(CONFIG.VALIDACOES);
-
-export default CONFIG; 
+Object.freeze(window.CONFIG);
+Object.freeze(window.CONFIG.AUTH);
+Object.freeze(window.CONFIG.AUTH.SENHAS);
+Object.freeze(window.CONFIG.PRODUTOS);
+Object.freeze(window.CONFIG.ESTOQUE);
+Object.freeze(window.CONFIG.VENDAS);
+Object.freeze(window.CONFIG.UI);
+Object.freeze(window.CONFIG.VALIDACOES); 
