@@ -834,6 +834,11 @@
     <!-- O conteúdo será preenchido dinamicamente pelo JavaScript -->
   </section>
 
-  <script type="module" src="js/app.js"></script>
+  <script type="module">
+    import App from './js/app.js';
+    window.addEventListener('DOMContentLoaded', () => {
+      window.app = new App();
+    });
+  </script>
 </body>
 </html> 

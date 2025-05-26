@@ -15,12 +15,7 @@ const AUTH_CONFIG = {
 
 class App {
     constructor() {
-        // Garantir que o DOM está carregado antes de inicializar
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.initialize());
-        } else {
-            this.initialize();
-        }
+        this.initialize();
     }
 
     initialize() {
@@ -44,7 +39,12 @@ class App {
 
     initializeEventListeners() {
         // Adicionar evento de submit ao formulário de login
-        this.loginForm.addEventListener('submit', (e) => this.handleLogin(e));
+        if (this.loginForm) {
+            this.loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleLogin(e);
+            });
+        }
 
         // Cliente
         document.getElementById('clienteForm').addEventListener('submit', this.handleClienteSubmit.bind(this));
